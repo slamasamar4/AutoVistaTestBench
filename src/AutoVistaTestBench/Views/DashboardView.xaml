@@ -1,0 +1,317 @@
+<UserControl x:Class="AutoVistaTestBench.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Background="{StaticResource BackgroundDeepBrush}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="16"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="16"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="16"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- ── Section: Session Configuration ──────────────────────────── -->
+            <Border Grid.Row="0" Style="{StaticResource CardStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="16"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="16"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal">
+                        <Ellipse Width="8" Height="8" Fill="{StaticResource AccentAmberBrush}"
+                                 VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBlock Text="TEST SESSION CONFIGURATION"
+                                   Style="{StaticResource HeadingMediumStyle}"
+                                   Foreground="{StaticResource AccentAmberBrush}"/>
+                    </StackPanel>
+
+                    <!-- Input fields -->
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="16"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="16"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="SESSION NAME" Style="{StaticResource LabelStyle}"
+                                       Margin="0,0,0,4" LetterSpacing="1"/>
+                            <TextBox Text="{Binding SessionName, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource InputStyle}"
+                                     IsEnabled="{Binding CanStart}"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="OPERATOR" Style="{StaticResource LabelStyle}"
+                                       Margin="0,0,0,4" LetterSpacing="1"/>
+                            <TextBox Text="{Binding OperatorName, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource InputStyle}"
+                                     IsEnabled="{Binding CanStart}"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="4">
+                            <TextBlock Text="VEHICLE / DUT ID" Style="{StaticResource LabelStyle}"
+                                       Margin="0,0,0,4" LetterSpacing="1"/>
+                            <TextBox Text="{Binding VehicleId, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource InputStyle}"
+                                     IsEnabled="{Binding CanStart}"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Action buttons -->
+                    <StackPanel Grid.Row="4" Orientation="Horizontal">
+                        <Button Content="▶  START SESSION"
+                                Style="{StaticResource PrimaryButtonStyle}"
+                                Command="{Binding StartSessionCommand}"
+                                Margin="0,0,12,0"/>
+                        <Button Content="■  STOP SESSION"
+                                Style="{StaticResource DangerButtonStyle}"
+                                Command="{Binding StopSessionCommand}"/>
+                        <Border Background="{StaticResource BackgroundPanelBrush}"
+                                BorderBrush="{StaticResource BorderSubtleBrush}"
+                                BorderThickness="1" CornerRadius="4"
+                                Padding="16,10" Margin="16,0,0,0">
+                            <StackPanel Orientation="Horizontal">
+                                <Ellipse Width="10" Height="10"
+                                         Fill="{Binding HealthColor}"
+                                         VerticalAlignment="Center"
+                                         Margin="0,0,8,0">
+                                    <Ellipse.Effect>
+                                        <BlurEffect Radius="3"/>
+                                    </Ellipse.Effect>
+                                </Ellipse>
+                                <TextBlock Text="{Binding OverallHealth}"
+                                           FontFamily="Consolas" FontSize="14" FontWeight="SemiBold"
+                                           Foreground="{Binding HealthColor}"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- ── Section: Live Session Metrics ───────────────────────────── -->
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Metric: Status -->
+                <Border Grid.Column="0" Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="STATUS" Style="{StaticResource LabelStyle}" LetterSpacing="2"/>
+                        <TextBlock Text="{Binding SessionStatus}"
+                                   FontFamily="Consolas" FontSize="22" FontWeight="SemiBold"
+                                   Foreground="{StaticResource AccentAmberBrush}"
+                                   Margin="0,6,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Metric: Duration -->
+                <Border Grid.Column="2" Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="DURATION" Style="{StaticResource LabelStyle}" LetterSpacing="2"/>
+                        <TextBlock Text="{Binding SessionDuration}"
+                                   Style="{StaticResource MetricValueStyle}"
+                                   Foreground="{StaticResource AccentBlueBrush}"
+                                   Margin="0,6,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Metric: Samples -->
+                <Border Grid.Column="4" Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="SAMPLES" Style="{StaticResource LabelStyle}" LetterSpacing="2"/>
+                        <TextBlock Text="{Binding TotalSamples}"
+                                   Style="{StaticResource MetricValueStyle}"
+                                   Margin="0,6,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Metric: Faults -->
+                <Border Grid.Column="6" Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="FAULTS" Style="{StaticResource LabelStyle}" LetterSpacing="2"/>
+                        <TextBlock Text="{Binding FaultCount}"
+                                   FontFamily="Consolas" FontSize="28" FontWeight="Light"
+                                   Foreground="{StaticResource AccentRedBrush}"
+                                   Margin="0,6,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Metric: Warnings -->
+                <Border Grid.Column="8" Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="WARNINGS" Style="{StaticResource LabelStyle}" LetterSpacing="2"/>
+                        <TextBlock Text="{Binding WarningCount}"
+                                   FontFamily="Consolas" FontSize="28" FontWeight="Light"
+                                   Foreground="{StaticResource AccentAmberBrush}"
+                                   Margin="0,6,0,0"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- ── Section: ECU Module Status ──────────────────────────────── -->
+            <Border Grid.Row="4" Style="{StaticResource CardStyle}">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                        <Ellipse Width="8" Height="8" Fill="{StaticResource AccentAmberBrush}"
+                                 VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBlock Text="ECU MODULE STATUS"
+                                   Style="{StaticResource HeadingMediumStyle}"
+                                   Foreground="{StaticResource AccentAmberBrush}"/>
+                    </StackPanel>
+
+                    <!-- Module status grid header -->
+                    <Grid Margin="0,0,0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="80"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="MODULE NAME" Style="{StaticResource LabelStyle}" LetterSpacing="1"/>
+                        <TextBlock Grid.Column="1" Text="MODULE ID" Style="{StaticResource LabelStyle}" LetterSpacing="1"/>
+                        <TextBlock Grid.Column="2" Text="STATUS" Style="{StaticResource LabelStyle}" LetterSpacing="1"/>
+                        <TextBlock Grid.Column="3" Text="FIRMWARE" Style="{StaticResource LabelStyle}" LetterSpacing="1"/>
+                        <TextBlock Grid.Column="4" Text="ERRORS" Style="{StaticResource LabelStyle}" LetterSpacing="1"/>
+                    </Grid>
+                    <Separator Style="{StaticResource SeparatorStyle}"/>
+
+                    <!-- Module status rows -->
+                    <ItemsControl ItemsSource="{Binding ModuleStatuses}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="200"/>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="80"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0" Text="{Binding ModuleName}"
+                                               Foreground="{StaticResource TextPrimaryBrush}"
+                                               FontSize="12" VerticalAlignment="Center"/>
+
+                                    <TextBlock Grid.Column="1" Text="{Binding ModuleId}"
+                                               FontFamily="Consolas" FontSize="11"
+                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                               VerticalAlignment="Center"/>
+
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal"
+                                                VerticalAlignment="Center">
+                                        <Ellipse Width="8" Height="8"
+                                                 Fill="{Binding StatusColor}"
+                                                 VerticalAlignment="Center"
+                                                 Margin="0,0,6,0"/>
+                                        <TextBlock Text="{Binding Status}"
+                                                   FontFamily="Consolas" FontSize="11"
+                                                   Foreground="{Binding StatusColor}"
+                                                   VerticalAlignment="Center"/>
+                                    </StackPanel>
+
+                                    <TextBlock Grid.Column="3" Text="{Binding FirmwareVersion}"
+                                               FontFamily="Consolas" FontSize="11"
+                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                               VerticalAlignment="Center"/>
+
+                                    <TextBlock Grid.Column="4" Text="{Binding ErrorCount}"
+                                               FontFamily="Consolas" FontSize="11"
+                                               Foreground="{StaticResource AccentRedBrush}"
+                                               VerticalAlignment="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!-- ── Section: Recent Anomalies ───────────────────────────────── -->
+            <Border Grid.Row="6" Style="{StaticResource CardStyle}" MinHeight="160">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                        <Ellipse Width="8" Height="8" Fill="{StaticResource AccentRedBrush}"
+                                 VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBlock Text="RECENT ANOMALY EVENTS"
+                                   Style="{StaticResource HeadingMediumStyle}"
+                                   Foreground="{StaticResource AccentRedBrush}"/>
+                    </StackPanel>
+
+                    <ItemsControl ItemsSource="{Binding RecentAnomalies}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="#1AE74C3C"
+                                        BorderBrush="#33E74C3C"
+                                        BorderThickness="1"
+                                        CornerRadius="3"
+                                        Padding="8,6"
+                                        Margin="0,2">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="90"/>
+                                            <ColumnDefinition Width="160"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0"
+                                                   Text="{Binding DetectedAt, StringFormat=HH:mm:ss.fff}"
+                                                   FontFamily="Consolas" FontSize="11"
+                                                   Foreground="{StaticResource AccentRedBrush}"/>
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{Binding ChannelName}"
+                                                   FontFamily="Consolas" FontSize="11"
+                                                   Foreground="{StaticResource TextPrimaryBrush}"/>
+                                        <TextBlock Grid.Column="2"
+                                                   Text="{Binding Description}"
+                                                   FontSize="11"
+                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBlock Text="No anomalies detected."
+                               FontSize="12" Foreground="{StaticResource TextMutedBrush}"
+                               HorizontalAlignment="Center" Margin="0,12">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RecentAnomalies.Count}" Value="0">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</UserControl>
