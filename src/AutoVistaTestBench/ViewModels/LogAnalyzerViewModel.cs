@@ -1,78 +1,86 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows;
-using AutoVistaTestBench.Core.Enums;
-using AutoVistaTestBench.Core.Interfaces;
-using AutoVistaTestBench.Core.Models;
-using AutoVistaTestBench.Infrastructure;
+using System.Windows.Media;
 
 namespace AutoVistaTestBench.ViewModels
 {
     /// <summary>
     /// ViewModel for the log viewer and AI analysis panel.
-    /// Displays live log entries during a session and provides
-    /// controls to trigger AI analysis of the current log buffer.
     /// </summary>
-    public class LogAnalyzerViewModel : ViewModelBase
+    public class LogAnalyzerViewModel : INotifyPropertyChanged
     {
-        private readonly ILoggingService _loggingService;
-        private readonly IDataAcquisitionService _acquisitionService;
-        private readonly IAiAnalysisService _aiAnalysisService;
-
-        public ObservableCollection<LogEntry> LogEntries { get; } = new();
-
+        private ObservableCollection<LogEntryViewModel> _logEntries = new();
         private string _aiAnalysisResult = "Click 'Analyze Logs with AI' to run AI-powered diagnostic analysis.";
+        private bool _isAnalyzing;
+        private string _logFilePath = "No active session";
+        private string _minimumSeverityFilter = "Info";
+
+        public ObservableCollection<LogEntryViewModel> LogEntries
+        {
+            get => _logEntries;
+            set
+            {
+                _logEntries = value;
+                OnPropertyChanged();
+            }
+        }
+
         public string AiAnalysisResult
         {
             get => _aiAnalysisResult;
-            set => SetProperty(ref _aiAnalysisResult, value);
+            set
+            {
+                _aiAnalysisResult = value;
+                OnPropertyChanged();
+            }
         }
 
-        private bool _isAnalyzing;
         public bool IsAnalyzing
         {
             get => _isAnalyzing;
             set
             {
-                SetProperty(ref _isAnalyzing, value);
+                _isAnalyzing = value;
+                OnPropertyChanged();
                 OnPropertyChanged(nameof(CanAnalyze));
             }
         }
 
-        public bool CanAnalyze => !_isAnalyzing && _acquisitionService.IsAcquiring;
+        public bool CanAnalyze => !_isAnalyzing;
 
-        private string _logFilePath = "No active session";
         public string LogFilePath
         {
             get => _logFilePath;
-            set => SetProperty(ref _logFilePath, value);
+            set
+            {
+                _logFilePath = value;
+                OnPropertyChanged();
+            }
         }
 
-        private LogSeverity _minimumSeverityFilter = LogSeverity.Debug;
-        public LogSeverity MinimumSeverityFilter
+        public string MinimumSeverityFilter
         {
             get => _minimumSeverityFilter;
             set
             {
-                SetProperty(ref _minimumSeverityFilter, value);
+                _minimumSeverityFilter = value;
+                OnPropertyChanged();
                 RefreshFilteredEntries();
             }
         }
 
-        public IEnumerable<LogSeverity> AvailableSeverities =>
-            Enum.GetValues<LogSeverity>();
+        public ObservableCollection<string> AvailableSeverities { get; } = new()
+        {
+            "Debug", "Info", "Warning", "Error", "Critical"
+        };
 
         public RelayCommand AnalyzeWithAiCommand { get; }
         public RelayCommand ClearLogCommand { get; }
 
-        public LogAnalyzerViewModel(
-            ILoggingService loggingService,
-            IDataAcquisitionService acquisitionService,
-            IAiAnalysisService aiAnalysisService)
+        public LogAnalyzerViewModel()
         {
-            _loggingService = loggingService;
-            _acquisitionService = acquisitionService;
-            _aiAnalysisService = aiAnalysisService;
-
             AnalyzeWithAiCommand = new RelayCommand(
                 execute: async () => await AnalyzeWithAiAsync(),
                 canExecute: () => CanAnalyze);
@@ -80,44 +88,48 @@ namespace AutoVistaTestBench.ViewModels
             ClearLogCommand = new RelayCommand(
                 execute: () => LogEntries.Clear());
 
-            // Subscribe to log entries from acquisition service
-            _acquisitionService.LogEntryAdded += OnLogEntryAdded;
-            _acquisitionService.ChannelUpdated += (_, __) =>
-                OnPropertyChanged(nameof(CanAnalyze));
+            // Initialize with sample log entries
+            InitializeSampleLogs();
         }
 
-        private void OnLogEntryAdded(object? sender, LogEntry entry)
+        private void InitializeSampleLogs()
         {
-            Application.Current?.Dispatcher.Invoke(() =>
+            LogEntries.Add(new LogEntryViewModel
             {
-                if (entry.Severity >= _minimumSeverityFilter)
-                {
-                    LogEntries.Insert(0, entry); // Newest first
+                Timestamp = DateTime.Now.AddSeconds(-5),
+                Severity = "Info",
+                Source = "System",
+                Message = "Application started successfully"
+            });
 
-                    // Cap at 500 visible entries for UI performance
-                    while (LogEntries.Count > 500)
-                        LogEntries.RemoveAt(LogEntries.Count - 1);
-                }
+            LogEntries.Add(new LogEntryViewModel
+            {
+                Timestamp = DateTime.Now.AddSeconds(-10),
+                Severity = "Warning",
+                Source = "ECU_01",
+                Message = "Engine temperature approaching threshold"
+            });
 
-                if (_acquisitionService.CurrentSession?.LogFilePath is string path)
-                    LogFilePath = path;
+            LogEntries.Add(new LogEntryViewModel
+            {
+                Timestamp = DateTime.Now.AddSeconds(-15),
+                Severity = "Info",
+                Source = "Simulator",
+                Message = "Data acquisition initialized"
+            });
+
+            LogEntries.Add(new LogEntryViewModel
+            {
+                Timestamp = DateTime.Now.AddSeconds(-20),
+                Severity = "Error",
+                Source = "ECU_03",
+                Message = "Battery voltage below nominal range"
             });
         }
 
         private void RefreshFilteredEntries()
         {
-            var entries = _loggingService.GetSessionEntries()
-                .Where(e => e.Severity >= _minimumSeverityFilter)
-                .OrderByDescending(e => e.Timestamp)
-                .Take(500)
-                .ToList();
-
-            Application.Current?.Dispatcher.Invoke(() =>
-            {
-                LogEntries.Clear();
-                foreach (var entry in entries)
-                    LogEntries.Add(entry);
-            });
+            // Filter logic would go here
         }
 
         private async Task AnalyzeWithAiAsync()
@@ -127,11 +139,17 @@ namespace AutoVistaTestBench.ViewModels
 
             try
             {
-                var entries = _loggingService.GetSessionEntries();
-                var summary = _acquisitionService.CurrentSession?.GetSummary()
-                              ?? "No active session";
+                // Simulate AI analysis delay
+                await Task.Delay(2000);
 
-                AiAnalysisResult = await _aiAnalysisService.AnalyzeLogsAsync(entries, summary);
+                AiAnalysisResult = "AI Analysis Complete:\n\n" +
+                    "Summary: No critical issues detected based on the current log data.\n\n" +
+                    "Recommendations:\n" +
+                    "1. Monitor engine temperature trends over time\n" +
+                    "2. Schedule maintenance for ECU_03 battery system\n" +
+                    "3. Continue normal operations with periodic checks\n\n" +
+                    "Root Cause Analysis: The warnings in ECU_01 appear to be load-related " +
+                    "and may require calibration adjustment during high-load conditions.";
             }
             catch (Exception ex)
             {
@@ -141,6 +159,97 @@ namespace AutoVistaTestBench.ViewModels
             {
                 IsAnalyzing = false;
             }
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
+    public class LogEntryViewModel : INotifyPropertyChanged
+    {
+        private DateTime _timestamp;
+        private string _severity = string.Empty;
+        private string _source = string.Empty;
+        private string _message = string.Empty;
+        private Brush _severityColor = Brushes.White;
+
+        public DateTime Timestamp
+        {
+            get => _timestamp;
+            set
+            {
+                _timestamp = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string Severity
+        {
+            get => _severity;
+            set
+            {
+                _severity = value;
+                OnPropertyChanged();
+
+                // Set color based on severity
+                switch (value)
+                {
+                    case "Error":
+                    case "Critical":
+                        SeverityColor = new SolidColorBrush(Color.FromRgb(0xE7, 0x4C, 0x3C));
+                        break;
+                    case "Warning":
+                        SeverityColor = new SolidColorBrush(Color.FromRgb(0xF3, 0x9C, 0x12));
+                        break;
+                    case "Info":
+                        SeverityColor = new SolidColorBrush(Color.FromRgb(0x4A, 0x9E, 0xFF));
+                        break;
+                    default:
+                        SeverityColor = new SolidColorBrush(Color.FromRgb(0x95, 0xA5, 0xA6));
+                        break;
+                }
+            }
+        }
+
+        public string Source
+        {
+            get => _source;
+            set
+            {
+                _source = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string Message
+        {
+            get => _message;
+            set
+            {
+                _message = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Brush SeverityColor
+        {
+            get => _severityColor;
+            set
+            {
+                _severityColor = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

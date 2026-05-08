@@ -3,8 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:converters="clr-namespace:AutoVistaTestBench.Converters"
              mc:Ignorable="d"
              Background="{StaticResource BackgroundDeepBrush}">
+
+    <UserControl.Resources>
+        <converters:WidthFromNormalizedConverter x:Key="WidthFromNormalizedConverter" />
+    </UserControl.Resources>
 
     <Grid Margin="20">
         <Grid.RowDefinitions>
@@ -89,21 +94,21 @@
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Grid.Column="1" Text="CHANNEL ID"
-                                   Style="{StaticResource LabelStyle}" LetterSpacing="1"/>
+                                   Style="{StaticResource LabelStyle}" />
                         <TextBlock Grid.Column="2" Text="NAME"
-                                   Style="{StaticResource LabelStyle}" LetterSpacing="1"/>
+                                   Style="{StaticResource LabelStyle}" />
                         <TextBlock Grid.Column="3" Text="MODULE"
-                                   Style="{StaticResource LabelStyle}" LetterSpacing="1"/>
+                                   Style="{StaticResource LabelStyle}" />
                         <TextBlock Grid.Column="4" Text="TYPE"
-                                   Style="{StaticResource LabelStyle}" LetterSpacing="1"/>
+                                   Style="{StaticResource LabelStyle}" />
                         <TextBlock Grid.Column="5" Text="LIVE VALUE"
-                                   Style="{StaticResource LabelStyle}" LetterSpacing="1"/>
+                                   Style="{StaticResource LabelStyle}" />
                         <TextBlock Grid.Column="6" Text="STATUS"
-                                   Style="{StaticResource LabelStyle}" LetterSpacing="1"/>
+                                   Style="{StaticResource LabelStyle}" />
                         <TextBlock Grid.Column="7" Text="LEVEL"
-                                   Style="{StaticResource LabelStyle}" LetterSpacing="1"/>
+                                   Style="{StaticResource LabelStyle}" />
                         <TextBlock Grid.Column="8" Text="UPDATED"
-                                   Style="{StaticResource LabelStyle}" LetterSpacing="1"/>
+                                   Style="{StaticResource LabelStyle}" />
                     </Grid>
                 </Border>
 
@@ -191,21 +196,14 @@
                                                     Height="8" CornerRadius="4"/>
                                             <Border Height="8" CornerRadius="4"
                                                     HorizontalAlignment="Left"
-                                                    MinWidth="2">
+                                                    MinWidth="2"
+                                                    Background="{Binding StatusColor}">
                                                 <Border.Width>
-                                                    <MultiBinding>
-                                                        <MultiBinding.Converter>
-                                                            <local:WidthFromNormalizedConverter
-                                                                xmlns:local="clr-namespace:AutoVistaTestBench.Converters"/>
-                                                        </MultiBinding.Converter>
+                                                    <MultiBinding Converter="{StaticResource WidthFromNormalizedConverter}">
                                                         <Binding Path="NormalizedValue"/>
-                                                        <Binding Path="ActualWidth"
-                                                                 RelativeSource="{RelativeSource AncestorType=Grid}"/>
+                                                        <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType=Grid}"/>
                                                     </MultiBinding>
                                                 </Border.Width>
-                                                <Border.Background>
-                                                    <SolidColorBrush Color="{Binding StatusColor.Color}"/>
-                                                </Border.Background>
                                             </Border>
                                         </Grid>
 

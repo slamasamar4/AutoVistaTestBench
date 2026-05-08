@@ -76,7 +76,7 @@ namespace AutoVistaTestBench.Simulator.Generators
                 ChannelId = channel.Id,
                 ChannelName = channel.Name,
                 TriggerValue = channel.CurrentValue,
-                ThresholdValue = channel.FaultThreshold,
+                ThresholdValue = channel.CriticalThreshold,
                 Description = $"Injected fault: {faultType} on channel {channel.Id}. " +
                               $"Value: {channel.CurrentValue:F3} {channel.Unit}",
                 DetectedAt = DateTime.UtcNow

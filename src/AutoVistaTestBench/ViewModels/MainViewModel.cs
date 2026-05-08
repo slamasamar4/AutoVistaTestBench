@@ -1,13 +1,13 @@
-using AutoVistaTestBench.Infrastructure;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace AutoVistaTestBench.ViewModels
 {
     /// <summary>
     /// Root ViewModel for the MainWindow.
     /// Acts as a navigation coordinator between the different views/tabs.
-    /// Holds references to child ViewModels injected via DI.
     /// </summary>
-    public class MainViewModel : ViewModelBase
+    public class MainViewModel : INotifyPropertyChanged
     {
         public DashboardViewModel DashboardViewModel { get; }
         public ChannelMonitorViewModel ChannelMonitorViewModel { get; }
@@ -17,20 +17,24 @@ namespace AutoVistaTestBench.ViewModels
         public int SelectedTabIndex
         {
             get => _selectedTabIndex;
-            set => SetProperty(ref _selectedTabIndex, value);
+            set { _selectedTabIndex = value; OnPropertyChanged(); }
         }
 
         public string ApplicationTitle =>
             $"AutoVista ECU Test Bench — v1.0.0 | .NET 8 / WPF";
 
-        public MainViewModel(
-            DashboardViewModel dashboardViewModel,
-            ChannelMonitorViewModel channelMonitorViewModel,
-            LogAnalyzerViewModel logAnalyzerViewModel)
+        public MainViewModel()
         {
-            DashboardViewModel = dashboardViewModel;
-            ChannelMonitorViewModel = channelMonitorViewModel;
-            LogAnalyzerViewModel = logAnalyzerViewModel;
+            DashboardViewModel = new DashboardViewModel();
+            ChannelMonitorViewModel = new ChannelMonitorViewModel();
+            LogAnalyzerViewModel = new LogAnalyzerViewModel();
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

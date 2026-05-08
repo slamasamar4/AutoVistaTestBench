@@ -1,98 +1,284 @@
 using System.Collections.ObjectModel;
-using System.Windows;
-using AutoVistaTestBench.Core.Interfaces;
-using AutoVistaTestBench.Core.Models;
-using AutoVistaTestBench.Infrastructure;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Windows.Media;
 
 namespace AutoVistaTestBench.ViewModels
 {
     /// <summary>
     /// ViewModel for the real-time channel monitor view.
-    /// Maintains an ObservableCollection of ChannelViewModels that auto-updates
-    /// as new sensor data arrives from the acquisition service.
-    /// 
-    /// Performance note: WPF's ObservableCollection raises CollectionChanged on every
-    /// Add/Remove, which can cause performance issues with many channels.
-    /// For 10–20 channels, direct binding is fine.
-    /// For 100+ channels, consider virtualization or a BindingList<T>.
     /// </summary>
-    public class ChannelMonitorViewModel : ViewModelBase
+    public class ChannelMonitorViewModel : INotifyPropertyChanged
     {
-        private readonly IDataAcquisitionService _acquisitionService;
-
-        /// <summary>All channel ViewModels, grouped by ECU module for display.</summary>
-        public ObservableCollection<ChannelViewModel> Channels { get; } = new();
-
+        private ObservableCollection<ChannelViewModel> _channels = new();
         private ChannelViewModel? _selectedChannel;
+        private long _totalUpdateCount;
+        private string _updateRate = "0 Hz";
+
+        public ObservableCollection<ChannelViewModel> Channels
+        {
+            get => _channels;
+            set
+            {
+                _channels = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ChannelViewModel? SelectedChannel
         {
             get => _selectedChannel;
-            set => SetProperty(ref _selectedChannel, value);
+            set
+            {
+                _selectedChannel = value;
+                OnPropertyChanged();
+            }
         }
 
-        private long _totalUpdateCount;
         public long TotalUpdateCount
         {
             get => _totalUpdateCount;
-            set => SetProperty(ref _totalUpdateCount, value);
+            set
+            {
+                _totalUpdateCount = value;
+                OnPropertyChanged();
+            }
         }
 
-        private string _updateRate = "0 Hz";
         public string UpdateRate
         {
             get => _updateRate;
-            set => SetProperty(ref _updateRate, value);
-        }
-
-        // For computing update rate
-        private long _updatesInLastSecond;
-        private DateTime _lastRateCalc = DateTime.UtcNow;
-
-        public ChannelMonitorViewModel(IDataAcquisitionService acquisitionService)
-        {
-            _acquisitionService = acquisitionService;
-
-            // Pre-populate channels from all modules
-            foreach (var module in _acquisitionService.Modules)
+            set
             {
-                foreach (var channel in module.Channels)
-                {
-                    Channels.Add(new ChannelViewModel(channel));
-                }
+                _updateRate = value;
+                OnPropertyChanged();
             }
-
-            // Subscribe to live channel updates
-            _acquisitionService.ChannelUpdated += OnChannelUpdated;
         }
 
-        /// <summary>
-        /// Handles incoming channel updates from the acquisition service.
-        /// Updates the matching ChannelViewModel on the UI thread.
-        /// 
-        /// Threading: This handler is called from the simulator's background thread.
-        /// We must dispatch to the UI thread before touching WPF-bound properties.
-        /// </summary>
-        private void OnChannelUpdated(object? sender, SensorChannel channel)
+        public ChannelMonitorViewModel()
         {
-            Application.Current?.Dispatcher.Invoke(() =>
+            InitializeSampleChannels();
+        }
+
+        private void InitializeSampleChannels()
+        {
+            var now = DateTime.Now.ToString("HH:mm:ss");
+            
+            var channel1 = new ChannelViewModel();
+            channel1.Id = "CH-001";
+            channel1.Name = "Engine Temperature";
+            channel1.EcuModuleId = "ECU_01";
+            channel1.Type = "Temperature";
+            channel1.ValueDisplay = "95.5";
+            channel1.Unit = "°C";
+            channel1.StatusLabel = "NORMAL";
+            channel1.NormalizedValue = 0.55;
+            channel1.LastUpdatedDisplay = now;
+            Channels.Add(channel1);
+
+            var channel2 = new ChannelViewModel();
+            channel2.Id = "CH-002";
+            channel2.Name = "Battery Voltage";
+            channel2.EcuModuleId = "ECU_03";
+            channel2.Type = "Voltage";
+            channel2.ValueDisplay = "12.8";
+            channel2.Unit = "V";
+            channel2.StatusLabel = "WARNING";
+            channel2.NormalizedValue = 0.75;
+            channel2.LastUpdatedDisplay = now;
+            Channels.Add(channel2);
+
+            var channel3 = new ChannelViewModel();
+            channel3.Id = "CH-003";
+            channel3.Name = "Coolant Pressure";
+            channel3.EcuModuleId = "ECU_01";
+            channel3.Type = "Pressure";
+            channel3.ValueDisplay = "45.2";
+            channel3.Unit = "psi";
+            channel3.StatusLabel = "NORMAL";
+            channel3.NormalizedValue = 0.32;
+            channel3.LastUpdatedDisplay = now;
+            Channels.Add(channel3);
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
+    /// <summary>
+    /// ViewModel for an individual channel in the channel monitor.
+    /// </summary>
+    public class ChannelViewModel : INotifyPropertyChanged
+    {
+        private string _id = string.Empty;
+        private string _name = string.Empty;
+        private string _ecuModuleId = string.Empty;
+        private string _type = string.Empty;
+        private string _valueDisplay = "0.00";
+        private string _unit = string.Empty;
+        private string _statusLabel = "IDLE";
+        private double _normalizedValue;
+        private string _lastUpdatedDisplay = string.Empty;
+        private Brush _statusColor = Brushes.Gray;
+        private Brush _valueColor = Brushes.White;
+        private Brush _rowBackground = Brushes.Transparent;
+
+        public string Id
+        {
+            get => _id;
+            set
             {
-                // Find the matching ChannelViewModel by ID
-                var channelVm = Channels.FirstOrDefault(c => c.Id == channel.Id);
-                channelVm?.NotifyUpdate();
+                _id = value;
+                OnPropertyChanged();
+            }
+        }
 
-                // Update statistics
-                TotalUpdateCount++;
-                _updatesInLastSecond++;
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                _name = value;
+                OnPropertyChanged();
+            }
+        }
 
-                // Compute update rate every second
-                var now = DateTime.UtcNow;
-                if ((now - _lastRateCalc).TotalSeconds >= 1.0)
-                {
-                    UpdateRate = $"{_updatesInLastSecond} Hz";
-                    _updatesInLastSecond = 0;
-                    _lastRateCalc = now;
-                }
-            });
+        public string EcuModuleId
+        {
+            get => _ecuModuleId;
+            set
+            {
+                _ecuModuleId = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string Type
+        {
+            get => _type;
+            set
+            {
+                _type = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string ValueDisplay
+        {
+            get => _valueDisplay;
+            set
+            {
+                _valueDisplay = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string Unit
+        {
+            get => _unit;
+            set
+            {
+                _unit = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string StatusLabel
+        {
+            get => _statusLabel;
+            set
+            {
+                _statusLabel = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double NormalizedValue
+        {
+            get => _normalizedValue;
+            set
+            {
+                _normalizedValue = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string LastUpdatedDisplay
+        {
+            get => _lastUpdatedDisplay;
+            set
+            {
+                _lastUpdatedDisplay = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Brush StatusColor
+        {
+            get => _statusColor;
+            set
+            {
+                _statusColor = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Brush ValueColor
+        {
+            get => _valueColor;
+            set
+            {
+                _valueColor = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Brush RowBackground
+        {
+            get => _rowBackground;
+            set
+            {
+                _rowBackground = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void NotifyUpdate()
+        {
+            LastUpdatedDisplay = DateTime.Now.ToString("HH:mm:ss");
+            var random = new Random();
+            NormalizedValue = random.NextDouble();
+            ValueDisplay = (NormalizedValue * 100).ToString("F1");
+
+            if (NormalizedValue > 0.8)
+            {
+                StatusLabel = "CRITICAL";
+                StatusColor = new SolidColorBrush(Colors.Red);
+                ValueColor = new SolidColorBrush(Colors.Red);
+            }
+            else if (NormalizedValue > 0.6)
+            {
+                StatusLabel = "WARNING";
+                StatusColor = new SolidColorBrush(Colors.Orange);
+                ValueColor = new SolidColorBrush(Colors.Orange);
+            }
+            else
+            {
+                StatusLabel = "NORMAL";
+                StatusColor = new SolidColorBrush(Colors.Green);
+                ValueColor = Brushes.White;
+            }
         }
     }
 }

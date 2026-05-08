@@ -3,14 +3,15 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <AssemblyName>AutoVistaTestBench.Services</AssemblyName>
-    <RootNamespace>AutoVistaTestBench.Services</RootNamespace>
+    <AssemblyName>AutoVistaTestBench.Simulator</AssemblyName>
+    <RootNamespace>AutoVistaTestBench.Simulator</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\AutoVistaTestBench.Core\AutoVistaTestBench.Core.csproj" />
+    <ProjectReference Include="..\Interfaces\AutoVistaTestBench.Interfaces.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
-    <PackageReference Include="System.Text.Json" Version="8.0.0" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>AutoVistaTestBench.Interfaces</AssemblyName>
+    <RootNamespace>AutoVistaTestBench.Interfaces</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AutoVistaTestBench.Core\AutoVistaTestBench.Core.csproj" />
+  </ItemGroup>
+</Project>
