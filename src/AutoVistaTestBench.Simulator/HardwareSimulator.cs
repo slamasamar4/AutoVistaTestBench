@@ -72,7 +72,7 @@ namespace AutoVistaTestBench.Simulator
                         Id = "PT_TEMP_01", Name = "Engine Coolant Temperature",
                         Type = SensorType.Temperature, Unit = "°C",
                         MinValue = -40, MaxValue = 130, CurrentValue = 25,
-                        WarningThreshold = 100, FaultThreshold = 120,
+                        WarningThreshold = 100, CriticalThreshold = 120,
                         EcuModuleId = "ECU_POWERTRAIN"
                     },
                     new SensorChannel
@@ -80,7 +80,7 @@ namespace AutoVistaTestBench.Simulator
                         Id = "PT_TEMP_02", Name = "Oil Temperature",
                         Type = SensorType.Temperature, Unit = "°C",
                         MinValue = -20, MaxValue = 150, CurrentValue = 30,
-                        WarningThreshold = 120, FaultThreshold = 140,
+                        WarningThreshold = 120, CriticalThreshold = 140,
                         EcuModuleId = "ECU_POWERTRAIN"
                     },
                     new SensorChannel
@@ -88,7 +88,7 @@ namespace AutoVistaTestBench.Simulator
                         Id = "PT_RPM_01", Name = "Engine Speed",
                         Type = SensorType.Speed, Unit = "RPM",
                         MinValue = 0, MaxValue = 8000, CurrentValue = 800,
-                        WarningThreshold = 6500, FaultThreshold = 7500,
+                        WarningThreshold = 6500, CriticalThreshold = 7500,
                         EcuModuleId = "ECU_POWERTRAIN"
                     },
                     new SensorChannel
@@ -96,7 +96,7 @@ namespace AutoVistaTestBench.Simulator
                         Id = "PT_PRES_01", Name = "Oil Pressure",
                         Type = SensorType.Pressure, Unit = "bar",
                         MinValue = 0, MaxValue = 8, CurrentValue = 3.5,
-                        WarningThreshold = 1.5, FaultThreshold = 0.8,
+                        WarningThreshold = 1.5, CriticalThreshold = 0.8,
                         EcuModuleId = "ECU_POWERTRAIN"
                     }
                 }
@@ -117,7 +117,7 @@ namespace AutoVistaTestBench.Simulator
                         Id = "BMS_VOLT_01", Name = "Battery Voltage",
                         Type = SensorType.Voltage, Unit = "V",
                         MinValue = 9.0, MaxValue = 16.0, CurrentValue = 13.8,
-                        WarningThreshold = 15.0, FaultThreshold = 15.8,
+                        WarningThreshold = 15.0, CriticalThreshold = 15.8,
                         EcuModuleId = "ECU_BMS"
                     },
                     new SensorChannel
@@ -125,7 +125,7 @@ namespace AutoVistaTestBench.Simulator
                         Id = "BMS_VOLT_02", Name = "Alternator Output Voltage",
                         Type = SensorType.Voltage, Unit = "V",
                         MinValue = 0, MaxValue = 16.0, CurrentValue = 14.1,
-                        WarningThreshold = 14.8, FaultThreshold = 15.5,
+                        WarningThreshold = 14.8, CriticalThreshold = 15.5,
                         EcuModuleId = "ECU_BMS"
                     },
                     new SensorChannel
@@ -133,7 +133,7 @@ namespace AutoVistaTestBench.Simulator
                         Id = "BMS_CURR_01", Name = "Battery Current",
                         Type = SensorType.Current, Unit = "A",
                         MinValue = -100, MaxValue = 200, CurrentValue = 5.0,
-                        WarningThreshold = 150, FaultThreshold = 180,
+                        WarningThreshold = 150, CriticalThreshold = 180,
                         EcuModuleId = "ECU_BMS"
                     },
                     new SensorChannel
@@ -141,7 +141,7 @@ namespace AutoVistaTestBench.Simulator
                         Id = "BMS_TEMP_01", Name = "Battery Temperature",
                         Type = SensorType.Temperature, Unit = "°C",
                         MinValue = -20, MaxValue = 60, CurrentValue = 22,
-                        WarningThreshold = 50, FaultThreshold = 58,
+                        WarningThreshold = 50, CriticalThreshold = 58,
                         EcuModuleId = "ECU_BMS"
                     }
                 }
@@ -162,7 +162,7 @@ namespace AutoVistaTestBench.Simulator
                         Id = "BCM_VOLT_01", Name = "Interior 12V Rail",
                         Type = SensorType.Voltage, Unit = "V",
                         MinValue = 9.0, MaxValue = 15.0, CurrentValue = 12.6,
-                        WarningThreshold = 14.5, FaultThreshold = 14.9,
+                        WarningThreshold = 14.5, CriticalThreshold = 14.9,
                         EcuModuleId = "ECU_BCM"
                     },
                     new SensorChannel
@@ -170,7 +170,7 @@ namespace AutoVistaTestBench.Simulator
                         Id = "BCM_TEMP_01", Name = "Ambient Temperature",
                         Type = SensorType.Temperature, Unit = "°C",
                         MinValue = -40, MaxValue = 85, CurrentValue = 23,
-                        WarningThreshold = 70, FaultThreshold = 80,
+                        WarningThreshold = 70, CriticalThreshold = 80,
                         EcuModuleId = "ECU_BCM"
                     }
                 }
@@ -270,10 +270,10 @@ namespace AutoVistaTestBench.Simulator
                                     ChannelId = channel.Id,
                                     ChannelName = channel.Name,
                                     TriggerValue = channel.CurrentValue,
-                                    ThresholdValue = channel.FaultThreshold,
+                                    ThresholdValue = channel.CriticalThreshold,
                                     Description = $"Fault threshold exceeded on {channel.Name}. " +
                                                   $"Measured: {channel.CurrentValue:F3} {channel.Unit}, " +
-                                                  $"Threshold: {channel.FaultThreshold:F3} {channel.Unit}",
+                                                  $"Threshold: {channel.CriticalThreshold:F3} {channel.Unit}",
                                     DetectedAt = DateTime.UtcNow
                                 };
                                 AnomalyDetected?.Invoke(this, anomaly);

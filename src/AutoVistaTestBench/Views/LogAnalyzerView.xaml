@@ -53,13 +53,13 @@
             <Border Grid.Row="2" Style="{StaticResource CardStyle}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="MIN SEVERITY:" Style="{StaticResource LabelStyle}"
-                               VerticalAlignment="Center" Margin="0,0,8,0" LetterSpacing="1"/>
+                               VerticalAlignment="Center" Margin="0,0,8,0"/>
                     <ComboBox ItemsSource="{Binding AvailableSeverities}"
                               SelectedItem="{Binding MinimumSeverityFilter}"
                               Style="{StaticResource InputComboBoxStyle}"
                               Width="120"/>
                     <TextBlock Text="LOG FILE:" Style="{StaticResource LabelStyle}"
-                               VerticalAlignment="Center" Margin="24,0,8,0" LetterSpacing="1"/>
+                               VerticalAlignment="Center" Margin="24,0,8,0"/>
                     <TextBlock Text="{Binding LogFilePath}"
                                FontFamily="Consolas" FontSize="10"
                                Foreground="{StaticResource AccentBlueBrush}"

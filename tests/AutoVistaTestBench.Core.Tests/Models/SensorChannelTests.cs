@@ -13,7 +13,7 @@ namespace AutoVistaTestBench.Core.Tests.Models
     {
         private static SensorChannel CreateTestChannel(
             double warningThreshold = 80.0,
-            double faultThreshold = 100.0)
+            double criticalThreshold = 100.0)
         {
             return new SensorChannel
             {
@@ -24,7 +24,7 @@ namespace AutoVistaTestBench.Core.Tests.Models
                 MinValue = -40,
                 MaxValue = 130,
                 WarningThreshold = warningThreshold,
-                FaultThreshold = faultThreshold,
+                CriticalThreshold = criticalThreshold,
                 Status = ChannelStatus.Active
             };
         }
@@ -47,7 +47,7 @@ namespace AutoVistaTestBench.Core.Tests.Models
         public void UpdateValue_ExceedingWarningThreshold_ShouldSetStatusWarning()
         {
             // Arrange
-            var channel = CreateTestChannel(warningThreshold: 80.0, faultThreshold: 100.0);
+            var channel = CreateTestChannel(warningThreshold: 80.0, criticalThreshold: 100.0);
 
             // Act
             channel.UpdateValue(85.0);
@@ -58,17 +58,17 @@ namespace AutoVistaTestBench.Core.Tests.Models
         }
 
         [Fact]
-        public void UpdateValue_ExceedingFaultThreshold_ShouldSetStatusFault()
+        public void UpdateValue_ExceedingCriticalThreshold_ShouldSetStatusFault()
         {
             // Arrange
-            var channel = CreateTestChannel(warningThreshold: 80.0, faultThreshold: 100.0);
+            var channel = CreateTestChannel(warningThreshold: 80.0, criticalThreshold: 100.0);
 
             // Act
             channel.UpdateValue(105.0);
 
             // Assert
             channel.Status.Should().Be(ChannelStatus.Fault,
-                "value 105.0 exceeds fault threshold of 100.0");
+                "value 105.0 exceeds critical threshold of 100.0");
         }
 
         [Fact]

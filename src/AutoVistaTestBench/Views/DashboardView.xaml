@@ -49,7 +49,7 @@
 
                         <StackPanel Grid.Column="0">
                             <TextBlock Text="SESSION NAME" Style="{StaticResource LabelStyle}"
-                                       Margin="0,0,0,4" LetterSpacing="1"/>
+                                       Margin="0,0,0,4"/>
                             <TextBox Text="{Binding SessionName, UpdateSourceTrigger=PropertyChanged}"
                                      Style="{StaticResource InputStyle}"
                                      IsEnabled="{Binding CanStart}"/>
@@ -57,7 +57,7 @@
 
                         <StackPanel Grid.Column="2">
                             <TextBlock Text="OPERATOR" Style="{StaticResource LabelStyle}"
-                                       Margin="0,0,0,4" LetterSpacing="1"/>
+                                       Margin="0,0,0,4"/>
                             <TextBox Text="{Binding OperatorName, UpdateSourceTrigger=PropertyChanged}"
                                      Style="{StaticResource InputStyle}"
                                      IsEnabled="{Binding CanStart}"/>
@@ -65,7 +65,7 @@
 
                         <StackPanel Grid.Column="4">
                             <TextBlock Text="VEHICLE / DUT ID" Style="{StaticResource LabelStyle}"
-                                       Margin="0,0,0,4" LetterSpacing="1"/>
+                                       Margin="0,0,0,4"/>
                             <TextBox Text="{Binding VehicleId, UpdateSourceTrigger=PropertyChanged}"
                                      Style="{StaticResource InputStyle}"
                                      IsEnabled="{Binding CanStart}"/>
@@ -121,7 +121,7 @@
                 <!-- Metric: Status -->
                 <Border Grid.Column="0" Style="{StaticResource CardStyle}">
                     <StackPanel>
-                        <TextBlock Text="STATUS" Style="{StaticResource LabelStyle}" LetterSpacing="2"/>
+                        <TextBlock Text="STATUS" Style="{StaticResource LabelStyle}" />
                         <TextBlock Text="{Binding SessionStatus}"
                                    FontFamily="Consolas" FontSize="22" FontWeight="SemiBold"
                                    Foreground="{StaticResource AccentAmberBrush}"
@@ -132,7 +132,7 @@
                 <!-- Metric: Duration -->
                 <Border Grid.Column="2" Style="{StaticResource CardStyle}">
                     <StackPanel>
-                        <TextBlock Text="DURATION" Style="{StaticResource LabelStyle}" LetterSpacing="2"/>
+                        <TextBlock Text="DURATION" Style="{StaticResource LabelStyle}" />
                         <TextBlock Text="{Binding SessionDuration}"
                                    Style="{StaticResource MetricValueStyle}"
                                    Foreground="{StaticResource AccentBlueBrush}"
@@ -143,7 +143,7 @@
                 <!-- Metric: Samples -->
                 <Border Grid.Column="4" Style="{StaticResource CardStyle}">
                     <StackPanel>
-                        <TextBlock Text="SAMPLES" Style="{StaticResource LabelStyle}" LetterSpacing="2"/>
+                        <TextBlock Text="SAMPLES" Style="{StaticResource LabelStyle}" />
                         <TextBlock Text="{Binding TotalSamples}"
                                    Style="{StaticResource MetricValueStyle}"
                                    Margin="0,6,0,0"/>
@@ -153,7 +153,7 @@
                 <!-- Metric: Faults -->
                 <Border Grid.Column="6" Style="{StaticResource CardStyle}">
                     <StackPanel>
-                        <TextBlock Text="FAULTS" Style="{StaticResource LabelStyle}" LetterSpacing="2"/>
+                        <TextBlock Text="FAULTS" Style="{StaticResource LabelStyle}" />
                         <TextBlock Text="{Binding FaultCount}"
                                    FontFamily="Consolas" FontSize="28" FontWeight="Light"
                                    Foreground="{StaticResource AccentRedBrush}"
@@ -164,7 +164,7 @@
                 <!-- Metric: Warnings -->
                 <Border Grid.Column="8" Style="{StaticResource CardStyle}">
                     <StackPanel>
-                        <TextBlock Text="WARNINGS" Style="{StaticResource LabelStyle}" LetterSpacing="2"/>
+                        <TextBlock Text="WARNINGS" Style="{StaticResource LabelStyle}" />
                         <TextBlock Text="{Binding WarningCount}"
                                    FontFamily="Consolas" FontSize="28" FontWeight="Light"
                                    Foreground="{StaticResource AccentAmberBrush}"
@@ -193,11 +193,11 @@
                             <ColumnDefinition Width="120"/>
                             <ColumnDefinition Width="80"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="MODULE NAME" Style="{StaticResource LabelStyle}" LetterSpacing="1"/>
-                        <TextBlock Grid.Column="1" Text="MODULE ID" Style="{StaticResource LabelStyle}" LetterSpacing="1"/>
-                        <TextBlock Grid.Column="2" Text="STATUS" Style="{StaticResource LabelStyle}" LetterSpacing="1"/>
-                        <TextBlock Grid.Column="3" Text="FIRMWARE" Style="{StaticResource LabelStyle}" LetterSpacing="1"/>
-                        <TextBlock Grid.Column="4" Text="ERRORS" Style="{StaticResource LabelStyle}" LetterSpacing="1"/>
+                        <TextBlock Grid.Column="0" Text="MODULE NAME" Style="{StaticResource LabelStyle}" />
+                        <TextBlock Grid.Column="1" Text="MODULE ID" Style="{StaticResource LabelStyle}" />
+                        <TextBlock Grid.Column="2" Text="STATUS" Style="{StaticResource LabelStyle}" />
+                        <TextBlock Grid.Column="3" Text="FIRMWARE" Style="{StaticResource LabelStyle}" />
+                        <TextBlock Grid.Column="4" Text="ERRORS" Style="{StaticResource LabelStyle}" />
                     </Grid>
                     <Separator Style="{StaticResource SeparatorStyle}"/>
 
