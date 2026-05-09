@@ -4,30 +4,43 @@ using AutoVistaTestBench.Views;
 
 namespace AutoVistaTestBench
 {
-    /// <summary>
-    /// Application entry point
-    /// </summary>
     public partial class App : Application
     {
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
-            // Add global exception handling
-            DispatcherUnhandledException += (s, args) =>
+            // CRITICAL: Set shutdown mode to explicit so the app doesn't close prematurely
+            this.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
+            // Add global exception handling to catch any errors
+            this.DispatcherUnhandledException += (s, args) =>
             {
-                MessageBox.Show(
-                    $"An unexpected error occurred:\n\n{args.Exception.Message}\n\n{args.Exception.StackTrace}",
-                    "AutoVista Test Bench — Error",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
+                MessageBox.Show($"Error: {args.Exception.Message}\n\n{args.Exception.StackTrace}",
+                    "Application Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 args.Handled = true;
             };
 
-            // Create and show main window with ViewModel
-            var mainViewModel = new MainViewModel();
-            var mainWindow = new MainWindow(mainViewModel);
-            mainWindow.Show();
+            try
+            {
+                // Create main window
+                var mainViewModel = new MainViewModel();
+                var mainWindow = new MainWindow(mainViewModel);
+                
+                // Explicitly set as the application's main window
+                this.MainWindow = mainWindow;
+                
+                // Now switch back to normal shutdown mode
+                this.ShutdownMode = ShutdownMode.OnMainWindowClose;
+                
+                // Show the window
+                mainWindow.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Startup failed: {ex.Message}\n\n{ex.StackTrace}",
+                    "Critical Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }
